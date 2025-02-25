@@ -1,0 +1,75 @@
+﻿@model IEnumerable<StoryConnect.Models.Libros>
+@{
+    ViewData["Title"] = "Biblioteca";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">Biblioteca</h1>
+        </div>
+        <div class="col-md-4 text-end align-self-center">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Agregar Libro
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm" style="transition: transform 0.3s ease;">
+                    <div class="position-relative">
+                        @if (!string.IsNullOrEmpty(item.ImagenPortada))
+                        {
+                            <img src="@item.ImagenPortada" class="card-img-top" alt="@item.Titulo" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <img src="/images/book-placeholder.jpg" class="card-img-top" alt="@item.Titulo" style="height: 200px; object-fit: cover;">
+                        }
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-primary rounded-pill">
+                                <i class="bi bi-star-fill"></i> @item.CalificacionPromedio
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate" title="@item.Titulo">@item.Titulo</h5>
+                        <p class="card-text text-muted mb-1">
+                            <i class="bi bi-person"></i> @item.NombreAutor
+                        </p>
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-calendar"></i> @item.FechaPublicacion.Year &nbsp;|&nbsp;
+                            <i class="bi bi-file-text"></i> @item.NumeroPaginas págs
+                        </p>
+                        <p class="card-text small text-truncate" title="@item.Sinopsis">@item.Sinopsis</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="btn-group w-100">
+                            <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Detalles
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <script>
+        $(document).ready(function() {
+            alert('La biblioteca está vacía. Puede agregar un nuevo libro usando el botón "Agregar Libro".');
+        });
+    </script>
+}
