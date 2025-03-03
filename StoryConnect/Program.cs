@@ -1,20 +1,24 @@
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using StoryConnect.Context;
-using StoryConnect.Data;
 using StoryConnect.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+});
+
+
 // Add services to the container.
 //string connectionString = builder.Configuration.GetConnectionString("StorySQL");
-builder.Services.AddDbContext<UsuariosContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("StorySQL")));
 builder.Services.AddDbContext<StoryContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("StorySQL")));
 builder.Services.AddTransient<IRepositoryLibros, RepositoryLibros>();
 builder.Services.AddTransient<RepositoryAutores>();
-builder.Services.AddSession();
+builder.Services.AddTransient<UserRepository>();
+//builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 

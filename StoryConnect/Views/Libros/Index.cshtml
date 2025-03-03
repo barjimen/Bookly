@@ -2,8 +2,7 @@
 @{
     ViewData["Title"] = "Biblioteca";
 }
-
-<div class="container">
+<div class="container-fluid" style="padding-top: 2rem!important; padding-bottom:6rem!important">
     <div class="row mb-4">
         <div class="col-md-8">
             <h1 class="display-4">Biblioteca</h1>
@@ -14,7 +13,6 @@
             </a>
         </div>
     </div>
-
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var item in Model)
         {
@@ -64,7 +62,6 @@
         }
     </div>
 </div>
-
 @if (!Model.Any())
 {
     <script>

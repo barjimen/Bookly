@@ -1,37 +1,28 @@
 ﻿using System.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StoryConnect.Data;
 using StoryConnect.Models;
 using System.Security.Cryptography;
+using StoryConnect.Context;
+using StoryConnect.Repositories;
 
 namespace StoryConnect.Controllers
 {
     public class UsuariosController : Controller
     {
-        private UsuariosContext context;
-        public UsuariosController(UsuariosContext context)
+        private UserRepository repo;
+        public UsuariosController(UserRepository repo)
         {
-            this.context = context;
+            this.repo = repo;
         }
         public IActionResult Register()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(string nombre, string email, byte[] password)
+        public async Task<IActionResult> Register(string nombre, string email, string password)
         {
-            Usuarios usuario = new Usuarios
-            {
-                Nombre = nombre,
-                email = email,
-                Password = password,
-                ImagenPerfil = "default.jpg",
-                FechaRegistro = DateTime.Now,
-                TipoUsuario = "lector"
-            };
-            this.context.Usuarios.Add(usuario);
-            await context.SaveChangesAsync();
+            await this.repo.Register(nombre, email, password);
             ViewData["Mensaje"] = "Usuario registrado correctamente.";
             return RedirectToAction("Index", "Home");
         }
@@ -43,22 +34,24 @@ namespace StoryConnect.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, byte[] password)
+        public async Task<IActionResult> Login(string email, string password)
         {
-            Usuarios usuario = await this.context.Usuarios.FirstOrDefaultAsync(u => u.email == email && u.Password == password);
-            if (usuario == null)
+            var usuario = await this.repo.Login(email, password);
+            if (usuario != null)
             {
-                ViewData["Error"] = "Email o contraseña incorrectos.";
+                HttpContext.Session.SetInt32("id", usuario.Id);
+                HttpContext.Session.SetString("nombre", usuario.Nombre);
+                HttpContext.Session.SetString("email", usuario.email);
+                HttpContext.Session.SetString("tipo_usuario", usuario.TipoUsuario);
+                HttpContext.Session.SetString("imagen_perfil", usuario.ImagenPerfil);
+
+                return RedirectToAction("Index", "Libros");
             }
             else
             {
-                HttpContext.Session.SetInt32("id", usuario.Id);
-                HttpContext.Session.SetString("email", usuario.email);
-                HttpContext.Session.SetString("nombre", usuario.Nombre);
-                HttpContext.Session.SetString("tipo", usuario.TipoUsuario);
-                HttpContext.Session.SetString("imagen", usuario.ImagenPerfil);
+                ViewData["MENSAJE"] = "Usuario o contraseña incorrectos.";
+                return View();
             }
-            return RedirectToAction("Index", "Home");
         }
 
 
@@ -72,6 +65,12 @@ namespace StoryConnect.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Perfil(int id)
+        {
+            var usuario =await  this.repo.GetUsuario(id);
+            return View(usuario);
         }
     }
 }

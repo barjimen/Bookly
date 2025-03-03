@@ -9,5 +9,6 @@ namespace StoryConnect.Context
 
         public DbSet<Libros> Libros { get; set; }
         public DbSet<Autores> Autores { get; set; }
+        public DbSet<Usuarios> Usuarios { get; set; }
     }
 }
