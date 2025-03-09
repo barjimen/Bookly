@@ -1,54 +1,135 @@
-﻿@model StoryConnect.Models.Usuarios
+﻿@model StoryConnect.Models.HomeUsuario
 
-@{
-    ViewData["Title"] = "Perfil";
-}
+<div class="container">
+    <!-- Encabezado con el nombre del usuario -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2>@Model.Usuarios.Nombre's Books by Status</h2>
+        </div>
+    </div>
 
-<h1>Perfil</h1>
+    <!-- Sección de listas predefinidas -->
+    <div class="row">
+        @{
+            // Definimos el orden de las listas predefinidas como aparecen en la imagen
+            var listasPredefinidas = new Dictionary<int, string>
+        {
+        { 3, "Want to Read" },
+        { 1, "Currently Reading" },
+        { 2, "Read" },
+        { 4, "Did not Finish" }
+        };
 
-<div>
-    <h4>Usuarios</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImagenPerfil)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImagenPerfil)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaRegistro)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaRegistro)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoUsuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoUsuario)
-        </dd>
-    </dl>
+            // Para cada lista predefinida
+            foreach (var lista in listasPredefinidas)
+            {
+                int listaId = lista.Key;
+                string listaNombre = lista.Value;
+
+                // Obtenemos el conteo de libros para esta lista
+                var conteo = 0;
+                var conteoItem = Model.CountLibrosPred.FirstOrDefault(c => c.Id == Model.Usuarios.Id && c.ListaId == listaId);
+                if (conteoItem != null)
+                {
+                    conteo = conteoItem.NumLibros;
+                }
+
+                // Obtenemos los libros para esta lista (limitado a 4 para mostrar)
+                var libros = Model.LibrosListasPred
+                .Where(l => l.Id == Model.Usuarios.Id && l.ListaId == listaId)
+                .OrderByDescending(l => l.Agregado_lista)
+                .Take(4)
+                .ToList();
+
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="status-label">@listaNombre</span>
+                                <span class="badge rounded-pill bg-secondary ms-2">@conteo</span>
+                            </div>
+                            @if (conteo > 4)
+                            {
+                                <a href="#" class="btn btn-link">See all</a>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach (var libro in libros)
+                                {
+                                    <div class="col-3 book-cover">
+                                        <a href="/Libros/Details/@libro.IdLibro">
+                                            <img src="~/images/books/@libro.Portada" alt="@libro.Titulo" class="img-fluid rounded" />
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Sección de objetivos de lectura -->
+    @if (Model.ObjetivosUsuarios != null && Model.ObjetivosUsuarios.Count() > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Reading Goals</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var objetivo in Model.ObjetivosUsuarios)
+                            {
+                                <div class="col-md-4">
+                                    <div class="goal-card">
+                                        <h4>@objetivo.NombreObjetivo</h4>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: @(objetivo.Meta)%"
+                                                 aria-valuenow="@objetivo.Meta"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100">
+                                                @objetivo.Meta%
+                                            </div>
+                                        </div>
+                                        <p>@objetivo.NombreObjetivo</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<!-- Estilos personalizados -->
+<style>
+    .book-cover img {
+        height: 200px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .book-cover img:hover {
+            transform: scale(1.05);
+        }
+
+    .status-label {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .goal-card {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        margin-bottom: 15px;
+    }
+</style>

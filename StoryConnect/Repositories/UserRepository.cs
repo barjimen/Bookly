@@ -33,6 +33,7 @@ namespace StoryConnect.Repositories
                 if (resultado == true)
                 {
                     return usuario;
+
                 }
                 else
                 {
@@ -44,8 +45,11 @@ namespace StoryConnect.Repositories
         public async Task Register(string nombre, string email, string password)
         {
             Usuarios usuario = new Usuarios();
+            int nuevoId = (context.Usuarios.Max(u => (int?)u.Id) ?? 0) + 1;
+            usuario.Id = nuevoId;
             usuario.Nombre = nombre;
             usuario.email = email;
+            usuario.Password = password;
             usuario.Salt = HelperCryptography.GenerateSalt();
             usuario.Password_hash = HelperCryptography.EncryptPassword(password, usuario.Salt);
             usuario.ImagenPerfil = "default.jpg";
@@ -62,5 +66,33 @@ namespace StoryConnect.Repositories
             var usuario = await this.context.Usuarios.Where(x => x.Id == id).FirstOrDefaultAsync();
             return usuario;
         }
+
+        public async Task<List<CountLibrosListasPredefinidas>> ObtenerCountListas(int idUsuario)
+        {
+            var consulta = await this.context.CountLibrosListasPredefinidas
+                               .Where(datos => datos.Id == idUsuario)
+                               .AsNoTracking()
+                               .ToListAsync();
+            return consulta;
+        }
+
+        public async Task<List<LibrosListasPredefinidas>> LibrosEnPredefinidos(int idUsuario)
+        {
+            var consulta = await this.context.LibrosListasPredefinidas
+                           .Where(datos => datos.Id == idUsuario)
+                           .AsNoTracking()
+                           .ToListAsync();
+            return consulta;
+        }
+
+        public async Task<List<ObjetivosUsuarios>> ObjetivosUsuarios(int idUsuario)
+        {
+            var consulta = await this.context.ObjetivosUsuarios
+                .Where(datos => datos.IdUsuario == idUsuario)
+                .AsNoTracking()
+                .ToListAsync();
+            return consulta;
+        }
+
     }
 }

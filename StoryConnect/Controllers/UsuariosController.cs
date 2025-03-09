@@ -45,7 +45,7 @@ namespace StoryConnect.Controllers
                 HttpContext.Session.SetString("tipo_usuario", usuario.TipoUsuario);
                 HttpContext.Session.SetString("imagen_perfil", usuario.ImagenPerfil);
 
-                return RedirectToAction("Index", "Libros");
+                return RedirectToAction("Home", "Libros");
             }
             else
             {
@@ -67,10 +67,24 @@ namespace StoryConnect.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Perfil(int id)
+        public async Task<IActionResult> Perfil()
         {
-            var usuario =await  this.repo.GetUsuario(id);
-            return View(usuario);
+            int idUser = (int)HttpContext.Session.GetInt32("id");
+            var usuario = await this.repo.GetUsuario(idUser);
+            var CountLibros = await this.repo.ObtenerCountListas(idUser);
+            var librosPredefinidos = await this.repo.LibrosEnPredefinidos(idUser);
+            var objetivos = await this.repo.ObjetivosUsuarios(idUser);
+            var homeUsuario = new HomeUsuario
+            {
+                Usuarios = usuario,
+                CountLibrosPred = CountLibros,
+                LibrosListasPred = librosPredefinidos,
+                ObjetivosUsuarios = objetivos
+            };
+
+            return View(homeUsuario);
         }
+
+        
     }
 }

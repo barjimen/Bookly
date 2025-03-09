@@ -1,24 +1,99 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Book Reading Tracker";
 }
 
-<div class="content">
-    <section class="container mt-4">
-        <h1>Bienvenido a nuestra App de Lectura</h1>
-        <p>Gestiona tus lecturas, haz seguimiento de tu progreso, busca libros y conecta con otros usuarios.</p>
-        <div class="row">
-            <div class="col-md-4">
-                <h3>📚 Biblioteca</h3>
-                <p>Explora y organiza tu colección de libros.</p>
+<div class="container-fluid landing-page p-0">
+    <div class="row hero-section m-0">
+        <div class="col-12 text-center py-5">
+            <h1 class="display-4 mb-4">Welcome to BookTrack</h1>
+            <p class="lead mb-4">Manage your reading journey, track your progress, discover books, and connect with fellow readers.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary btn-lg mr-3">Get Started</a>
+                <a href="#" class="btn btn-outline-secondary btn-lg">Learn More</a>
             </div>
-            <div class="col-md-4">
-                <h3>📊 Seguimiento</h3>
-                <p>Lleva un registro de tus lecturas y progreso.</p>
-            </div>
-            <div class="col-md-4">
-                <h3>🤝 Comunidad</h3>
-                <p>Conéctate con otros lectores y comparte tus experiencias.</p>
+        </div>
+    </div>
+
+    <section class="features-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📚</div>
+                            <h3 class="card-title">Personal Library</h3>
+                            <p class="card-text">Explore, organize, and manage your book collection with ease.</p>
+                            <a href="#" class="btn btn-outline-primary mt-3">Manage Library</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📊</div>
+                            <h3 class="card-title">Reading Progress</h3>
+                            <p class="card-text">Track your reading milestones, set goals, and visualize your progress.</p>
+                            <a href="#" class="btn btn-outline-primary mt-3">View Progress</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🤝</div>
+                            <h3 class="card-title">Reader Community</h3>
+                            <p class="card-text">Connect with other book lovers, share recommendations, and discuss reads.</p>
+                            <a href="#" class="btn btn-outline-primary mt-3">Join Community</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <section class="call-to-action bg-light py-5 text-center">
+        <div class="container">
+            <h2 class="mb-4">Start Your Reading Adventure Today</h2>
+            <p class="lead mb-4">Join thousands of readers tracking their books, discovering new titles, and sharing their passion.</p>
+            <a href="#" class="btn btn-success btn-lg">Sign Up Free</a>
+        </div>
+    </section>
 </div>
+
+<style>
+    .landing-page {
+        background-color: #f8f9fa;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 0;
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+        background-color: #6a11cb;
+        border-color: #6a11cb;
+    }
+
+    .btn-primary:hover {
+        background-color: #5a09ab;
+        border-color: #5a09ab;
+    }
+</style>

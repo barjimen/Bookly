@@ -22,6 +22,9 @@ namespace StoryConnect.Models
         [Column("tipo_usuario")]
         public string TipoUsuario { get; set; } = "lector";
 
+        [Column("password")]
+        public string Password { get; set; }
+
         [Column("password_salt")]
         public string Salt { get; set; }
 

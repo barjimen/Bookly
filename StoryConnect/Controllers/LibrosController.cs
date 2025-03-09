@@ -44,8 +44,24 @@ namespace StoryConnect.Controllers
             return Json(new { results = resultado });
         }
 
+        public async Task<IActionResult> Home()
+        {
+            int? idUsuario = HttpContext.Session.GetInt32("id");
 
+            List<LibrosLeyendo> libros = await this.repo.LibrosLeyendo(idUsuario.Value);
 
+            // Pasar los libros a la vista
+            return View(libros);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MoverLibrosEntreListas(int idlibro, int origen, int destino)
+        {
+            int idusuario = (int)HttpContext.Session.GetInt32("id");
+            Console.WriteLine(idusuario.ToString(), idlibro, origen, destino);
+            await this.repo.MoverLibrosLista(idusuario, idlibro, origen, destino);
+            return RedirectToAction("Home");
+        }
 
     }
 }

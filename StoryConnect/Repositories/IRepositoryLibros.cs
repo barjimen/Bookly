@@ -11,5 +11,10 @@ namespace StoryConnect.Repositories
         Task UpdateAsync(Libros libros);
 
         Task<List<Libros>> BuscarLibrosAsync(string query);
+
+        Task<List<LibrosLeyendo>> LibrosLeyendo(int idUsuario);
+
+        Task MoverLibrosLista(int idUsuario, int idLibro, int origen, int destino);
+
     }
 }

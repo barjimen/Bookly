@@ -2,6 +2,8 @@
 using StoryConnect.Context;
 using StoryConnect.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Mvc;
 
 namespace StoryConnect.Repositories
 {
@@ -52,6 +54,28 @@ namespace StoryConnect.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<LibrosLeyendo>> LibrosLeyendo(int idUsuario)
+        {
+            var consulta = await this.context.LibrosLeyendo
+                             .Where(datos => datos.IdUsuario == idUsuario)
+                             .AsNoTracking() // Evita que EF haga caché de los resultados
+                             .ToListAsync();
+            return consulta;
+        }
 
-    }
+
+    public async Task MoverLibrosLista(int idUsuario, int idLibro, int origen, int destino)
+    {
+        string sql = "EXEC sp_MoverLibroEntreListas @UsuarioID, @LibroID, @ListaOrigenID, @ListaDestinoID";
+
+        SqlParameter pamidUsuario = new SqlParameter("@UsuarioID", idUsuario);
+        SqlParameter pamidLibro = new SqlParameter("@LibroID", idLibro);
+        SqlParameter pamOrigen = new SqlParameter("@ListaOrigenID", origen);
+        SqlParameter pamDestino = new SqlParameter("@ListaDestinoID", destino);
+
+          await this.context.Database.ExecuteSqlRawAsync(sql, pamidUsuario, pamidLibro, pamOrigen, pamDestino);
+        }
+
+
+}
 }

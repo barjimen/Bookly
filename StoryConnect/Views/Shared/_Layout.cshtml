@@ -1,4 +1,7 @@
 ﻿
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -84,7 +87,6 @@
 
         .content {
         flex-grow: 0.1;
-        /* 🔥 Empuja el footer hacia abajo si el contenido es corto */
         overflow-y: auto;
         padding: 20px;
         }
@@ -109,8 +111,8 @@
 <body>
     @{
         var usuario = Context.Session.GetString("nombre");
-		var idUsuario = Context.Session.GetInt32("id");
-		var avatar = Context.Session.GetString("imagen_perfil");
+        var idUsuario = Context.Session.GetInt32("id");
+        var avatar = Context.Session.GetString("imagen_perfil");
     }
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid d-flex justify-content-between align-items-center">
@@ -121,11 +123,11 @@
             <div class="d-flex flex-grow-1 justify-content-center position-relative">
                 <form class="d-flex w-50">
                     <input id="searchBox" class="form-control me-2" type="text" placeholder="Buscar libros..."
-                           aria-label="Search">
+                    aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">🔍</button>
                 </form>
                 <div id="searchResults" class="dropdown-menu justify-content-center"
-                     style="display: none; position: absolute; top: 100%; left: 48%; transform: translateX(-50%);">
+                style="display: none; position: absolute; top: 100%; left: 48%; transform: translateX(-50%);">
                     <!-- Aquí se mostrarán los resultados -->
                 </div>
             </div>
@@ -139,25 +141,36 @@
     <main class="layout-container">
         <aside id="sidebar" class="p-3">
             <ul class="list-unstyled sidebar-links">
+                @if (usuario != null && avatar != null && idUsuario.HasValue)
+                {
+                    <li>
+                        <a asp-controller="Libros" asp-action="Home" class="btn btn-light w-100 btn-iconos">
+                            <i class="fa-solid fa-house"></i> <span class="sidebar-text">Inicio</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-light w-100 btn-iconos">
+                            <i class="fa-solid fa-house"></i> <span class="sidebar-text">Inicio</span>
+                        </a>
+                    </li>
+                }
                 <li>
                     <a asp-controller="Libros" asp-action="Index" class="btn btn-light w-100 btn-iconos">
-                        <i class="fa-solid fa-house"></i> <span class="sidebar-text">Inicio</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="btn btn-light w-100 btn-iconos">
                         <i class="fa-solid fa-book"></i> <span class="sidebar-text">Libros</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="btn btn-light w-100 btn-iconos">
+                    <a asp-controller="Autores" asp-action="Index" class="btn btn-light w-100 btn-iconos">
                         <i class="fa-solid fa-user"></i> <span class="sidebar-text">Autores</span>
                     </a>
                 </li>
                 @if ( usuario != null && avatar != null && idUsuario.HasValue)
                 {
                     <li>
-                        <a asp-controller="Usuarios" asp-action="Perfil" asp-route-id="@idUsuario.Value" class="btn btn-light w-100 btn-iconos">
+                        <a asp-controller="Usuarios" asp-action="Perfil" class="btn btn-light w-100 btn-iconos">
                             <span class="sidebar-text">@usuario -> @idUsuario</span>
                         </a>
                     </li>
