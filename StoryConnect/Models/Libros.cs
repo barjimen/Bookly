@@ -30,5 +30,7 @@ namespace StoryConnect.Models
         public int AutorId { get; set; }
         [Column("NombreAutor")]
         public string NombreAutor { get; set; }
+        [Column("LISTAID")]
+        public int idLista {  get; set; }
     }
 }

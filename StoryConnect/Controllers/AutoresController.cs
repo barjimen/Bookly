@@ -6,8 +6,8 @@ namespace StoryConnect.Controllers
 {
     public class AutoresController : Controller
     {
-        private RepositoryAutores repo;
-        public AutoresController(RepositoryAutores repo)
+        private IRepositoryLibros repo;
+        public AutoresController(IRepositoryLibros repo)
         {
             this.repo = repo;
         }
@@ -18,6 +18,7 @@ namespace StoryConnect.Controllers
             return View(autores);
         }
 
+        
 
     }
 }

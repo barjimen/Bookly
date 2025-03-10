@@ -14,5 +14,7 @@ namespace StoryConnect.Context
         public DbSet<ObjetivosUsuarios> ObjetivosUsuarios { get; set; }
         public DbSet<LibrosListasPredefinidas> LibrosListasPredefinidas { get; set; }
         public DbSet<CountLibrosListasPredefinidas> CountLibrosListasPredefinidas{ get; set; }
+        public DbSet<Etiquetas> Etiquetas { get; set; }
+        public DbSet<LibroEtiquetas> LibrosEtiquetas { get; set; }
     }
 }

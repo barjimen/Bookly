@@ -1,4 +1,4 @@
-﻿@model StoryConnect.Models.Libros
+﻿@model LibrosDetalles
 @{
     ViewData["Title"] = "Detalles";
 }
@@ -10,7 +10,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-action="Index">Inicio</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">@Html.DisplayFor(model => model.Titulo)</li>
+                    <li class="breadcrumb-item active" aria-current="page">@Html.DisplayFor(model => model.Libro.Titulo)</li>
                 </ol>
             </nav>
         </div>
@@ -20,9 +20,9 @@
         <!-- Left Column: Book Cover -->
         <div class="col-md-3 mb-4">
             <div class="text-center">
-                @if (!string.IsNullOrEmpty(Model.ImagenPortada))
+                @if (Model.Libro.ImagenPortada != null)
                 {
-                    <img src="~/images/books/@Model.ImagenPortada" alt="Portada de @Model.Titulo" class="img-fluid rounded shadow book-cover">
+                    <img src="~/images/books/@Model.Libro.ImagenPortada" alt="Portada de @Model.Libro.Titulo" class="img-fluid rounded shadow book-cover">
                 }
                 else
                 {
@@ -41,8 +41,8 @@
                 <!-- Edition Info -->
                 <div class="mt-3 text-start small">
                     <div class="text-muted mb-1">Edición:</div>
-                    <div>Pasta blanda, @Html.DisplayFor(model => model.NumeroPaginas) páginas</div>
-                    <div>Publicado: @Model.FechaPublicacion</div>
+                    <div>Pasta blanda, @Html.DisplayFor(model => model.Libro.NumeroPaginas) páginas</div>
+                    <div>Publicado: @Model.Libro.FechaPublicacion.ToShortDateString()</div>
                 </div>
             </div>
         </div>
@@ -50,13 +50,13 @@
         <!-- Right Column: Book Details -->
         <div class="col-md-9">
             <div class="mb-3">
-                <h1 class="book-title mb-1">@Html.DisplayFor(model => model.Titulo)</h1>
-                <h4 class="text-muted author-name">por <a href="#" class="text-decoration-none">@Html.DisplayFor(model => model.NombreAutor)</a></h4>
+                <h1 class="book-title mb-1">@Html.DisplayFor(model => model.Libro.Titulo)</h1>
+                <h4 class="text-muted author-name">por <a href="#" class="text-decoration-none">@Html.DisplayFor(model => model.Libro.NombreAutor)</a></h4>
 
-                @if (!string.IsNullOrEmpty(Model.Saga))
+                @if (!string.IsNullOrEmpty(Model.Libro.Saga))
                 {
                     <div class="mb-2 text-muted">
-                        <span class="badge bg-light text-dark border">@Html.DisplayFor(model => model.Saga) #@Html.DisplayFor(model => model.PosicionSaga)</span>
+                        <span class="badge bg-light text-dark border">@Html.DisplayFor(model => model.Libro.Saga) #@Html.DisplayFor(model => model.Libro.PosicionSaga)</span>
                     </div>
                 }
             </div>
@@ -65,11 +65,11 @@
             <div class="mb-4 rating-section">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <span class="display-6 fw-bold">@Model.CalificacionPromedio.ToString("0.00")</span>
+                        <span class="display-6 fw-bold">@Model.Libro.CalificacionPromedio.ToString("0.00")</span>
                     </div>
                     <div class="me-3">
                         <div class="stars-outer">
-                            <div class="stars-inner" style="width: @(Model.CalificacionPromedio * 20)%"></div>
+                            <div class="stars-inner" style="width: @(Model.Libro.CalificacionPromedio * 20)%"></div>
                         </div>
                         <div class="small text-muted mt-1">basado en reseñas de lectores</div>
                     </div>
@@ -81,10 +81,31 @@
                 </div>
             </div>
 
+            <!-- Tags Section (NEW) -->
+            <div class="mb-4 tags-section">
+                <h4>Etiquetas</h4>
+                <div class="etiquetas-container">
+                    @if (Model.Etiquetas != null && Model.Etiquetas.Any())
+                    {
+                        @foreach (var etiqueta in Model.Etiquetas)
+                        {
+                            <a href="@Url.Action("LibrosPorEtiqueta", "Libros", new { etiquetaId = etiqueta.Id })"
+                               class="badge bg-primary text-decoration-none me-2 mb-2 py-2 px-3">
+                                @etiqueta.Nombre
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted fst-italic">No hay etiquetas para este libro.</p>
+                    }
+                </div>
+            </div>
+
             <!-- Synopsis Section -->
             <div class="mb-4 sinopsis-section">
                 <h4>Sinopsis</h4>
-                <p>@Html.DisplayFor(model => model.Sinopsis)</p>
+                <p>@Html.DisplayFor(model => model.Libro.Sinopsis)</p>
             </div>
 
             <!-- Book Metadata -->
@@ -96,19 +117,19 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" class="text-muted">ID:</th>
-                                    <td>@Html.DisplayFor(model => model.Id)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.Id)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted">Título:</th>
-                                    <td>@Html.DisplayFor(model => model.Titulo)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.Titulo)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted">Autor:</th>
-                                    <td>@Html.DisplayFor(model => model.NombreAutor)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.NombreAutor)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted">Páginas:</th>
-                                    <td>@Html.DisplayFor(model => model.NumeroPaginas)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.NumeroPaginas)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -116,24 +137,24 @@
                     <div class="col-md-6">
                         <table class="table table-sm">
                             <tbody>
-                                @if (!string.IsNullOrEmpty(Model.Saga))
+                                @if (!string.IsNullOrEmpty(Model.Libro.Saga))
                                 {
                                     <tr>
                                         <th scope="row" class="text-muted">Saga:</th>
-                                        <td>@Html.DisplayFor(model => model.Saga)</td>
+                                        <td>@Html.DisplayFor(model => model.Libro.Saga)</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" class="text-muted">Posición:</th>
-                                        <td>@Html.DisplayFor(model => model.PosicionSaga)</td>
+                                        <td>@Html.DisplayFor(model => model.Libro.PosicionSaga)</td>
                                     </tr>
                                 }
                                 <tr>
                                     <th scope="row" class="text-muted">Fecha Publicación:</th>
-                                    <td>@Html.DisplayFor(model => model.FechaPublicacion)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.FechaPublicacion)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row" class="text-muted">ID Autor:</th>
-                                    <td>@Html.DisplayFor(model => model.AutorId)</td>
+                                    <td>@Html.DisplayFor(model => model.Libro.AutorId)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -143,7 +164,7 @@
 
             <!-- Buttons at the bottom -->
             <div class="mt-4 mb-4 d-flex">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2">
+                <a asp-action="Edit" asp-route-id="@Model.Libro.Id" class="btn btn-outline-primary me-2">
                     <i class="bi bi-pencil"></i> Editar
                 </a>
                 <a asp-action="Index" class="btn btn-outline-secondary">
@@ -215,6 +236,20 @@
         background-color: #f9f9f9;
         padding: 15px;
         border-radius: 5px;
+    }
+
+    /* Tags Section Styling */
+    .tags-section {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #007bff;
+    }
+
+    .etiquetas-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
     }
 </style>
 

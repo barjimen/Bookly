@@ -10,8 +10,8 @@ namespace StoryConnect.Controllers
 {
     public class UsuariosController : Controller
     {
-        private UserRepository repo;
-        public UsuariosController(UserRepository repo)
+        private IRepositoryLibros repo;
+        public UsuariosController(IRepositoryLibros repo)
         {
             this.repo = repo;
         }
@@ -85,6 +85,33 @@ namespace StoryConnect.Controllers
             return View(homeUsuario);
         }
 
-        
+        public async Task<IActionResult> MisLibros()
+        {
+            int idUser = (int)HttpContext.Session.GetInt32("id");
+            var CountLibros = await this.repo.ObtenerCountListas(idUser);
+
+
+            var MisLibros = new MisLibros
+            {
+                IdUsuario = idUser,
+                CountLibrosPred = CountLibros
+            };
+
+            return View(MisLibros);
+        }
+
+        public async Task<IActionResult> FiltrarMisLibros(int idUsuario, int idLista)
+        {
+            if (idLista == 0)
+            {
+                var libros = await this.repo.LibrosEnPredefinidos(idUsuario);
+                return PartialView("_LibrosPartial", libros);
+            }
+            else
+            {
+                var libros = await this.repo.FindLibrosEnPredefinidos(idUsuario, idLista);
+                return PartialView("_LibrosPartial", libros);
+            }
+        }
     }
 }

@@ -22,7 +22,13 @@ namespace StoryConnect.Controllers
         {
             Libros libro =
                 await this.repo.FindLibros(id);
-            return View(libro);
+            var etiquetas = await this.repo.ObtenerEtiquetasLibro(id);
+            var detallesLibro = new LibrosDetalles
+            {
+                Libro = libro,
+                Etiquetas = etiquetas
+            };
+            return View(detallesLibro);
         }
         [HttpGet]
         public async Task<JsonResult> BuscarLibros(string query)
@@ -63,5 +69,7 @@ namespace StoryConnect.Controllers
             return RedirectToAction("Home");
         }
 
+
+        
     }
 }
