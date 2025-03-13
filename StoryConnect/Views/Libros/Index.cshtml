@@ -1,23 +1,41 @@
-﻿@model IEnumerable<StoryConnect.Models.Libros>
+﻿@model Biblioteca
 @{
     ViewData["Title"] = "Biblioteca";
 }
+
 <div class="container-fluid" style="padding-top: 2rem!important; padding-bottom:6rem!important">
     <div class="row mb-4">
         <div class="col-md-8">
             <h1 class="display-4">Biblioteca</h1>
         </div>
-        <div class="col-md-4 text-end align-self-center">
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Agregar Libro
-            </a>
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <button class="btn btn-outline-primary filter-btn" data-filter="*">Mostrar Todos</button>
+            <div>
+                <div>
+
+                </div>
+                @foreach (var autor in Model.Autores)
+                {
+
+                    <button class="btn btn-outline-secondary filter-btn" data-filter=".autor-@autor.Id" data-group="autor">@autor.Nombre</button>
+                }
+            </div>
+            
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control quicksearch" id="quicksearch" placeholder="Buscar libros...">
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var item in Model)
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="libros-grid">
+        @foreach (var item in Model.Libros)
         {
-            <div class="col">
-                <div class="card h-100 shadow-sm" style="transition: transform 0.3s ease;">
+            var autorSlug = item.NombreAutor.Replace(" ", "-").ToLower();
+
+
+            <div class="col libro-item autor-@item.AutorId">
+                <div class="card shadow-sm" style="transition: transform 0.3s ease;">
                     <div class="position-relative">
                         @if (!string.IsNullOrEmpty(item.ImagenPortada))
                         {
@@ -49,17 +67,44 @@
                             <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye"></i> Detalles
                             </a>
-                            <p>@item.Id</p>
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-@item.Id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Cambiar lista
+                                <button class="btn dropdown-toggle
+                                @(item.idLista == 1 ? "btn-primary" :
+                                  item.idLista == 2 ? "btn-success" :
+                                  item.idLista == 3 ? "btn-warning" :
+                                  item.idLista == 4 ? "btn-black" :"btn-secondary")"
+                                        type="button" id="dropdownMenuButton-@item.Id"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                                    @if (item.idLista == 0)
+                                    {
+                                        <span>Añadir a lista</span>
+                                    }
+                                    else if (item.idLista == 1)
+                                    {
+                                        <span>Leyendo</span>
+                                    }
+                                    else if (item.idLista == 2)
+                                    {
+                                        <span>Leído</span>
+                                    }
+                                    else if (item.idLista == 3)
+                                    {
+                                        <span>Próxima Lectura</span>
+                                    }
+                                    else if (item.idLista == 4)
+                                    {
+                                        <span>No terminado</span>
+                                    }
                                 </button>
+
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-@item.Id">
                                     <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="1" data-origen="@item.idLista">Leyendo</button>
                                     <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="2" data-origen="@item.idLista">Leído</button>
                                     <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="3" data-origen="@item.idLista">Próxima Lectura</button>
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="4" data-origen="@item.idLista">No Terminado</button>
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="0" data-origen="@item.idLista">Eliminar</button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -68,10 +113,92 @@
         }
     </div>
 </div>
-@if (!Model.Any())
+
+@if (Model == null)
 {
-   <h2>No hay libros</h2>
+    <h2>No hay libros</h2>
 }
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/moveBooks.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Book moving functionality (your original code)
+        $(".mover-libro").click(function () {
+            var idlibro = $(this).data("idlibro");
+            var destino = $(this).data("destino");
+            var origen = $(this).data("origen");
+
+            $.ajax({
+                url: '/Libros/MoverLibrosEntreListas',
+                type: 'POST',
+                data: { idlibro: idlibro, destino: destino, origen: origen },
+                success: function (response) {
+                    alert("item movido exitosamente.");
+                    location.reload(); // Recargar la página para actualizar la lista
+                },
+                error: function (xhr, status, error) {
+                    alert("Error al mover el item: " + xhr.responseText);
+                }
+            });
+        });
+
+        var $grid = $('#libros-grid').isotope({
+            itemSelector: '.libro-item',
+            layoutMode: 'fitRows',
+            getSortData: {
+                title: '[data-title]'
+            }
+        });
+
+        var filters = {};
+
+        $('.filter-btn').click(function () {
+            var $this = $(this);
+            var group = $this.attr('data-group');
+            var filterValue = $this.attr('data-filter');
+
+            if ($this.hasClass('is-checked')) {
+                delete filters[group];
+                $this.removeClass('is-checked');
+            } else {
+                filters[group] = filterValue;
+                $('.filter-btn[data-group="' + group + '"]').removeClass('is-checked');
+                $this.addClass('is-checked');
+            }
+
+            var combinedFilter = Object.values(filters).join('');
+            $grid.isotope({ filter: combinedFilter || '*' });
+        });
+
+        var qsRegex;
+        $('#quicksearch').on('keyup', debounce(function () {
+            qsRegex = new RegExp($('#quicksearch').val(), 'gi');
+            $grid.isotope({
+                filter: function () {
+                    var $this = $(this);
+                    var searchResult = qsRegex ? $this.text().match(qsRegex) : true;
+                    var buttonResult = Object.values(filters).length === 0 || $this.is(Object.values(filters).join(''));
+                    return searchResult && buttonResult;
+                }
+            });
+        }, 200));
+
+        function debounce(fn, threshold) {
+            var timeout;
+            return function debounced() {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                function delayed() {
+                    fn();
+                    timeout = null;
+                }
+                timeout = setTimeout(delayed, threshold || 100);
+            };
+        }
+    });
+</script>

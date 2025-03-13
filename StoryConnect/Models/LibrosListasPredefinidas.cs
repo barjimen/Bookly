@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace StoryConnect.Models
 {
     [Table("V_LIBROS_PREDEFINIDAS")]
+    //[Table("V_LIBROS_PREDEFINIDAS")]
     public class LibrosListasPredefinidas
     {
         [Key]

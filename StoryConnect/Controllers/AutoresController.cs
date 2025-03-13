@@ -18,7 +18,11 @@ namespace StoryConnect.Controllers
             return View(autores);
         }
 
-        
+        public async Task<IActionResult> Details(int idAutor)
+        {
+            DetallesAutor detalles = await this.repo.FindAutorAsync(idAutor);
+            return View(detalles);
+        }
 
     }
 }

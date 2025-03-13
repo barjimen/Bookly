@@ -1,0 +1,29 @@
+﻿@model StoryConnect.Models.DetallesAutor
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>DetallesAutor</h4>
+    <hr />
+    <dl class="row">
+        @Model.Autores.Nombre
+    </dl>
+</div>
+
+<div>
+    <h1>Libros:</h1>
+    @foreach(var libro in Model.Libros)
+    {
+        <div>
+            <h3>@libro.Titulo</h3>
+            <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@libro.Id" class="btn btn-info">
+                Ver libro
+            </a>
+        </div>
+    }
+</div>
+

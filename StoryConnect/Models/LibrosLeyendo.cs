@@ -24,5 +24,7 @@ namespace StoryConnect.Models
         public string NombreAutor { get; set; }
         [Column("LISTAID")]
         public int IdLista {  get; set; }
+        [Column("NUMEROPAGINAS")]
+        public int paginas { get; set; }
     }
 }

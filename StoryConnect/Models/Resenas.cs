@@ -10,15 +10,17 @@ namespace StoryConnect.Models
 
         [Column("ID")]
         public int Id { get; set; }
-        [Column("USUARIO_ID")]
-        public int idUsuario { get; set; }
+        [ForeignKey(nameof(Id))]
+        public Usuarios Usuario { get; set; }
         [Column("LIBRO_ID")]
-        public int idPedido { get; set; }
+        public int idLibro { get; set; }
         [Column("CALIFICACION")]
         public int calificacion { get; set; }
         [Column("TEXTO")]
-        public string resena {  get; set; }
+        public string texto {  get; set; }
         [Column("FECHA_PUBLICACION")]
-        public string fecha { get; set; }
+        public DateTime fecha { get; set; }
+        [Column("USUARIO_ID")]
+        public int UsuarioId { get; set; }
     }
 }

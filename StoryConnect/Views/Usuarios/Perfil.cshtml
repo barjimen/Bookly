@@ -327,7 +327,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="padding-top: 2rem!important; padding-bottom:6rem!important">
         <!-- New Header Design -->
         <div class="profile-header">
             <div class="profile-main-info">
@@ -438,6 +438,35 @@
                                                     <div class="book-title">@libro.Titulo</div>
                                                     <div class="book-author">by @libro.Autor</div>
                                                     <div class="book-date">Added on @libro.Agregado_lista.ToString("MMM dd, yyyy")</div>
+
+                                                    @if (lista.Key == 1) // Only for Currently Reading
+                                                    {
+                                                        @if (Model.ProgresoLectura != null && Model.ProgresoLectura.idLibro == libro.IdLibro)
+                                                        {
+                                                            <div class="mt-2">
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <small class="text-muted">Reading progress</small>
+                                                                    <small class="text-muted">@Model.ProgresoLectura.Pagina / x</small>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.1);">
+                                                                    @{
+                                                                        var progressPercent = (Model.ProgresoLectura.Pagina * 100) / 300;
+                                                                    }
+                                                                    <div class="progress-bar" role="progressbar"
+                                                                         style="width: @progressPercent%; background-color: var(--highlight);"
+                                                                         aria-valuenow="@Model.ProgresoLectura.Pagina"
+                                                                         aria-valuemin="0"
+                                                                         aria-valuemax="300"></div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="mt-2">
+                                                                <small class="text-muted">No reading progress recorded</small>
+                                                            </div>
+                                                        }
+                                                    }
                                                 </div>
                                                 <span class="status-badge @badgeClass">@listaNombre</span>
                                             </div>
@@ -453,47 +482,52 @@
 
         <!-- Reading Goals Section -->
         @if (Model.ObjetivosUsuarios != null && Model.ObjetivosUsuarios.Count() > 0)
+{
+    <div class="mt-5">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="fas fa-chart-line me-2"></i> @Model.Usuarios.Nombre's Reading Goals
+            </h3>
+            @if (Model.ObjetivosUsuarios.Count() > 2)
+            {
+                <a asp-action="MisObjetivos" asp-controller="Usuarios" asp-route-id="@Model.Usuarios.Id" class="btn btn-link">Ver mis objetivos</a>
+            }
+        </div>
+
+        @foreach (var objetivo in Model.ObjetivosUsuarios.Take(2)) // Solo los primeros dos
         {
-            <div class="mt-5">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <i class="fas fa-chart-line me-2"></i> @Model.Usuarios.Nombre's Reading Goals
-                    </h3>
-                    <a href="#" class="see-all">See All Goals</a>
+            var percentComplete = (objetivo.ProgresoActual * 100) / objetivo.Meta;
+
+            <div class="reading-goal">
+                <div class="goal-header">
+                    <div class="goal-label">Goal</div>
+                    <div class="goal-label">
+                        <i class="fas fa-book me-1"></i> @objetivo.ProgresoActual/@objetivo.Meta books
+                        <span class="ms-2">•</span>
+                        <span class="ms-2">295 days remaining</span>
+                    </div>
                 </div>
 
-                @foreach (var objetivo in Model.ObjetivosUsuarios)
-                {
-                    var percentComplete = (objetivo.ProgresoActual * 100) / objetivo.Meta;
+                <h4 class="goal-title">2025 Reading Goal</h4>
+                <p>Read @objetivo.Meta books by Dec 30, 2025. You're 1 book ahead of schedule. 🙌</p>
 
-                    <div class="reading-goal">
-                        <div class="goal-header">
-                            <div class="goal-label">Goal</div>
-                            <div class="goal-label">
-                                <i class="fas fa-book me-1"></i> @objetivo.ProgresoActual/@objetivo.Meta books
-                                <span class="ms-2">•</span>
-                                <span class="ms-2">295 days remaining</span>
-                            </div>
-                        </div>
+                <div class="goal-progress">
+                    <div class="progress-bar" style="width: @percentComplete%"></div>
+                </div>
 
-                        <h4 class="goal-title">2025 Reading Goal</h4>
-                        <p>Read @objetivo.Meta books by Dec 30, 2025. You're 1 book ahead of schedule. 🙌</p>
-
-                        <div class="goal-progress">
-                            <div class="progress-bar" style="width: @percentComplete%"></div>
-                        </div>
-
-                        <div class="goal-stats">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="progress-marker" style="width: 20px; height: 20px; background-color: var(--accent-color); border-radius: 4px;"></div>
-                                <span>@objetivo.ProgresoActual/@objetivo.Meta books</span>
-                            </div>
-                            <div class="goal-percent">@percentComplete%</div>
-                        </div>
+                <div class="goal-stats">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="progress-marker" style="width: 20px; height: 20px; background-color: var(--accent-color); border-radius: 4px;"></div>
+                        <span>@objetivo.ProgresoActual/@objetivo.Meta books</span>
                     </div>
-                }
+                    <div class="goal-percent">@percentComplete%</div>
+                </div>
             </div>
         }
+    </div>
+}
+
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

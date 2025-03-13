@@ -1,13 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StoryConnect.Models
 {
-    [Table("V_LIBROS")]
-    public class Libros
+    [Table("V_AUTORES_LIBROS")]
+    public class LibrosAutor
     {
-        [Key]
+        [Column("AUTORID")]
+        public int IdAutor { get; set; }
         [Column("LIBROID")]
         public int Id { get; set; }
         [Column("TITULOLIBRO")]
@@ -26,9 +25,5 @@ namespace StoryConnect.Models
         public string ImagenPortada { get; set; }
         [Column("CALIFICACIONPROMEDIOLIBRO")]
         public decimal CalificacionPromedio { get; set; }
-        [Column("AutorId")]
-        public int AutorId { get; set; }
-        [Column("NombreAutor")]
-        public string NombreAutor { get; set; }
     }
 }

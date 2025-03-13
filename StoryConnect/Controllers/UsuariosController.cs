@@ -74,12 +74,20 @@ namespace StoryConnect.Controllers
             var CountLibros = await this.repo.ObtenerCountListas(idUser);
             var librosPredefinidos = await this.repo.LibrosEnPredefinidos(idUser);
             var objetivos = await this.repo.ObjetivosUsuarios(idUser);
+            ProgresoLectura progreso = null;
+            if (librosPredefinidos.Count > 0)
+            {
+                int idLibro = librosPredefinidos.First().IdLibro; // Suponiendo que la propiedad se llama así
+                progreso = await this.repo.GetProgresoLectura(idUser, idLibro);
+            }
+
             var homeUsuario = new HomeUsuario
             {
                 Usuarios = usuario,
                 CountLibrosPred = CountLibros,
                 LibrosListasPred = librosPredefinidos,
-                ObjetivosUsuarios = objetivos
+                ObjetivosUsuarios = objetivos,
+                ProgresoLectura = progreso
             };
 
             return View(homeUsuario);
@@ -112,6 +120,31 @@ namespace StoryConnect.Controllers
                 var libros = await this.repo.FindLibrosEnPredefinidos(idUsuario, idLista);
                 return PartialView("_LibrosPartial", libros);
             }
+        }
+
+        public async Task<IActionResult> MisObjetivos()
+        {
+            int idUser = (int)HttpContext.Session.GetInt32("id");
+
+            var objetivos = await this.repo.ObjetivosUsuarios(idUser);
+            return View(objetivos);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertObjetivo(ObjetivosUsuarios objetivos)
+        {
+            int idUser = (int)HttpContext.Session.GetInt32("id");
+
+            await this.repo.InsertObjetivo(idUser, objetivos.NombreObjetivo, objetivos.Fin, objetivos.TipoObjetivo,objetivos.Meta);
+            return RedirectToAction("MisObjetivos", idUser);
+        }
+
+
+        public async Task<IActionResult> DeleteObjetivo(int idObjetivo)
+        {
+            int idUser = (int)HttpContext.Session.GetInt32("id");
+            await this.repo.DeleteObjetivo(idObjetivo);
+            return RedirectToAction("MisObjetivos", idUser);
         }
     }
 }
