@@ -80,7 +80,7 @@ namespace StoryConnect.Repositories
         {
             return await this.context.Libros
                 .Where(l => l.Titulo.Contains(query) || l.NombreAutor.Contains(query)) 
-                .Take(5) // Máximo 5 resultados
+                .Take(5) 
                 .ToListAsync();
         }
 
@@ -88,7 +88,7 @@ namespace StoryConnect.Repositories
         {
             var consulta = await this.context.LibrosLeyendo
                              .Where(datos => datos.IdUsuario == idUsuario)
-                             .AsNoTracking() // Evita que EF haga caché de los resultados
+                             .AsNoTracking() 
                              .ToListAsync();
             return consulta;
         }
@@ -205,21 +205,17 @@ namespace StoryConnect.Repositories
 
         public async Task<List<Resenas>> Reseñas(int idLibro)
         {
-            // First, get all reviews for the book
             var resenas = await this.context.Reseñas
                     .Where(r => r.idLibro == idLibro)
                     .OrderByDescending(r => r.fecha)
                     .ToListAsync();
 
-            // Then get all the user IDs from these reviews
             var usuarioIds = resenas.Select(r => r.UsuarioId).Distinct().ToList();
 
-            // Fetch all users with those IDs in a single query
             var usuarios = await this.context.Usuarios
                             .Where(u => usuarioIds.Contains(u.Id))
                             .ToDictionaryAsync(u => u.Id, u => u);
 
-            // Manually assign the Usuario property for each review
             foreach (var resena in resenas)
             {
                 if (usuarios.TryGetValue(resena.UsuarioId, out var usuario))
@@ -275,7 +271,6 @@ namespace StoryConnect.Repositories
             SqlParameter pamCali = new SqlParameter("@calificacion", calificacion);
             SqlParameter pamTexto = new SqlParameter("@texto", texto);
 
-            // Ejecutar el procedimiento almacenado
             await this.context.Database.ExecuteSqlRawAsync(sql, pamIdUsuario, pamID, pamCali, pamTexto);
 
         }
@@ -315,7 +310,6 @@ namespace StoryConnect.Repositories
                           .Select(l => l.Id)
                           .ToListAsync();
 
-            // Then get all tag relationships for these books
             var consulta = from datos in this.context.LibrosEtiquetas
                            where librosIds.Contains(datos.LibroId)
                            select datos;

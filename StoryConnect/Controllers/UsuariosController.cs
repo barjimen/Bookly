@@ -77,7 +77,7 @@ namespace StoryConnect.Controllers
             ProgresoLectura progreso = null;
             if (librosPredefinidos.Count > 0)
             {
-                int idLibro = librosPredefinidos.First().IdLibro; // Suponiendo que la propiedad se llama así
+                int idLibro = librosPredefinidos.First().IdLibro;
                 progreso = await this.repo.GetProgresoLectura(idUser, idLibro);
             }
 

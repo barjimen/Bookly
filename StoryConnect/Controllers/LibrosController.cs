@@ -18,12 +18,10 @@ namespace StoryConnect.Controllers
 
             var libros = await this.repo.GetLibrosAsync(idUsuario);
 
-            // Get all tags and authors for dropdowns/filters
             var etiquetas = await this.repo.GetEtiquetas();
             var autores = await this.repo.GetAutoresAsync();
             var librosetiquetas = await this.repo.GetEtiquetasLibroByUsuario(idUsuario);
 
-            // Create the view model
             var datos = new Biblioteca
             {
                 Libros = libros,
@@ -44,7 +42,6 @@ namespace StoryConnect.Controllers
             var etiquetas = await this.repo.ObtenerEtiquetasLibro(id);
             List<Resenas> Reseñas = await this.repo.Reseñas(id);
 
-            // Obtener solo la listaId del usuario si existe
             int listaId = 0;
             if (idUsuario.HasValue)
             {
@@ -103,7 +100,6 @@ namespace StoryConnect.Controllers
                 ProgresoLectura = progresoLectura
             };
 
-            // Pasar los libros y progresos a la vista
             return View(libros);
         }
 
