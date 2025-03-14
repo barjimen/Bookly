@@ -1,6 +1,10 @@
 ﻿@model Biblioteca
 @{
     ViewData["Title"] = "Biblioteca";
+    
+        var usuario = Context.Session.GetString("nombre");
+        var idUsuario = Context.Session.GetInt32("id");
+        var avatar = Context.Session.GetString("imagen_perfil");
 }
 
 <style>
@@ -121,7 +125,7 @@
 
             <div class="col libro-item autor-@item.AutorId mb-4">
                 <div class="card shadow-sm h-100 rounded-lg overflow-hidden border-0" style="transition: all 0.3s ease;">
-                    <!-- Imagen como protagonista - más grande -->
+                   
                     <div class="position-relative">
                         @if (!string.IsNullOrEmpty(item.ImagenPortada))
                         {
@@ -131,7 +135,7 @@
                         {
                             <img src="/images/book-placeholder.jpg" class="card-img-top" alt="@item.Titulo" style="height: 280px; object-fit: cover;">
                         }
-                        <!-- Calificación como un círculo flotante - AHORA MÁS GRANDE -->
+                        
                         <div class="position-absolute top-0 end-0 p-2">
                             <span class="badge rounded-pill p-2" style="background-color: #56425D; width: 75px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 16px;">
                                 <i class="fa fa-star me-1"></i> @item.CalificacionPromedio
@@ -139,7 +143,7 @@
                         </div>
                     </div>
 
-                    <!-- Información minimalista -->
+                    
                     <div class="card-body p-3">
                         <h5 class="card-title fw-bold text-truncate mb-1" title="@item.Titulo">@item.Titulo</h5>
                         <p class="card-text text-muted mb-1 small">
@@ -150,17 +154,15 @@
                         </p>
                     </div>
 
-                    <!-- Botones más atractivos - CORREGIDO EL DROPDOWN -->
                     <div class="card-footer bg-transparent py-3 border-top-0">
                         <div class="d-flex gap-2">
-                            <!-- Botón de detalles más redondeado y estilizado -->
                             <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@item.Id"
                                class="btn btn-sm flex-grow-1 rounded-pill shadow-sm"
                                style="background-color: #e9ecef; color: #495057; border: none; transition: all 0.2s ease;">
                                 <i class="bi bi-eye"></i> Detalles
                             </a>
-
-                            <!-- Dropdown con estilo mejorado - CORREGIDO -->
+                            @if(usuario != null)
+                            {
                             <div class="dropdown flex-grow-1">
                                 <button class="btn btn-sm rounded-pill shadow-sm w-100 dropdown-toggle
                                 @(item.idLista == 1 ? "btn-primary" :
@@ -212,6 +214,15 @@
                                     </button>
                                 </div>
                             </div>
+                            }
+                            else
+                            {
+                                <a asp-action="Register" asp-controller="Usuarios"
+                                   class="btn btn-sm flex-grow-1 rounded-pill shadow-sm"
+                                   style="background-color: #56425D; color: white!important; border: none; transition: all 0.2s ease;">
+                                    <i class="bi bi-eye"></i> Añadir a lista
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -232,7 +243,6 @@
 
 <script>
     $(document).ready(function () {
-        // Book moving functionality (your original code)
         $(".mover-libro").click(function () {
             var idlibro = $(this).data("idlibro");
             var destino = $(this).data("destino");
@@ -244,7 +254,7 @@
                 data: { idlibro: idlibro, destino: destino, origen: origen },
                 success: function (response) {
                     alert("item movido exitosamente.");
-                    location.reload(); // Recargar la página para actualizar la lista
+                    location.reload();
                 },
                 error: function (xhr, status, error) {
                     alert("Error al mover el item: " + xhr.responseText);
