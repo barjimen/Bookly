@@ -328,6 +328,14 @@ namespace StoryConnect.Repositories
             this.context.ObjetivosUsuarios.Remove(objetivo);
             await this.context.SaveChangesAsync();
         }
+        public async Task <ObjetivosUsuarios> UpdateObjetivo(int idObjetivo, int idUsuario, int progreso)
+        {
+            var objetivo = await this.context.ObjetivosUsuarios.Where(x => x.idObjetivo == idObjetivo && x.IdUsuario == idUsuario).FirstOrDefaultAsync();
+            objetivo.ProgresoActual = progreso;
+            this.context.ObjetivosUsuarios.Update(objetivo);
+            await this.context.SaveChangesAsync();
+            return objetivo;
+        }
 
         public async Task InsertProgreso(int UsuarioId, int LibroId)
         {

@@ -3,107 +3,213 @@
     ViewData["Title"] = "Biblioteca";
 }
 
+<style>
+    
+
+    /* Animaciones y estilos para las tarjetas de libros */
+    .libro-item .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .libro-item .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    /* Botones más atractivos */
+    .libro-item .btn {
+        transition: all 0.2s ease;
+    }
+
+        .libro-item .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+    
+
+    /* Mejorar aspecto de dropdown */
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .dropdown-item:active, .dropdown-item:focus {
+            background-color: #f8f9fa;
+            color: inherit;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+
+    /* Calificación con animación */
+    .badge.rounded-circle {
+        transition: transform 0.2s ease;
+        font-size: 16px;
+    }
+
+    .libro-item:hover .badge.rounded-circle {
+        transform: scale(1.1);
+    }
+
+    /* Asegurar que el dropdown sea visible */
+    .dropdown-toggle::after {
+        display: inline-block;
+        margin-left: 0.255em;
+        vertical-align: 0.255em;
+        content: "";
+        border-top: 0.3em solid;
+        border-right: 0.3em solid transparent;
+        border-bottom: 0;
+        border-left: 0.3em solid transparent;
+    }
+
+    /* Fix para Bootstrap 5 si es necesario */
+    .dropdown-menu {
+        display: none;
+    }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+    /* Asegurar que el dropdown tenga suficiente z-index */
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        z-index: 1021;
+        min-width: 100%;
+    }
+</style>
+
 <div class="container-fluid" style="padding-top: 2rem!important; padding-bottom:6rem!important">
     <div class="row mb-4">
-        <div class="col-md-8">
-            <h1 class="display-4">Biblioteca</h1>
-        </div>
-
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            <button class="btn btn-outline-primary filter-btn" data-filter="*">Mostrar Todos</button>
-            <div>
-                <div>
-
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#filtroAutores" aria-expanded="false" aria-controls="filtroAutores" style="cursor: pointer;">
+                    <h5 class="mb-0">Filtrar por autor</h5>
+                    <i class="bi bi-chevron-down"></i>
                 </div>
-                @foreach (var autor in Model.Autores)
-                {
-
-                    <button class="btn btn-outline-secondary filter-btn" data-filter=".autor-@autor.Id" data-group="autor">@autor.Nombre</button>
-                }
+                <div class="collapse" id="filtroAutores">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-primary filter-btn mb-2" data-filter="'*'">Mostrar Todos</button>
+                            @foreach (var autor in Model.Autores)
+                            {
+                                <button class="btn btn-outline-secondary filter-btn mb-2" data-filter=".autor-@autor.Id" data-group="autor">@autor.Nombre</button>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
-            
         </div>
-        <div class="col-md-4">
-            <input type="text" class="form-control quicksearch" id="quicksearch" placeholder="Buscar libros...">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <input type="text" class="form-control quicksearch" id="quicksearch" placeholder="Buscar libros...">
+            </div>
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4" id="libros-grid">
+    <div class="row row-cols-1 row-cols-md-4 g-3 g-md-4" id="libros-grid">
         @foreach (var item in Model.Libros)
         {
             var autorSlug = item.NombreAutor.Replace(" ", "-").ToLower();
 
-
-            <div class="col libro-item autor-@item.AutorId">
-                <div class="card shadow-sm" style="transition: transform 0.3s ease;">
+            <div class="col libro-item autor-@item.AutorId mb-4">
+                <div class="card shadow-sm h-100 rounded-lg overflow-hidden border-0" style="transition: all 0.3s ease;">
+                    <!-- Imagen como protagonista - más grande -->
                     <div class="position-relative">
                         @if (!string.IsNullOrEmpty(item.ImagenPortada))
                         {
-                            <img src="~/images/books/@item.ImagenPortada" class="card-img-top" alt="@item.Titulo" style="height: 200px; object-fit: cover;">
+                            <img src="~/images/books/@item.ImagenPortada" class="card-img-top" alt="@item.Titulo" style="height: 280px; object-fit: cover;">
                         }
                         else
                         {
-                            <img src="/images/book-placeholder.jpg" class="card-img-top" alt="@item.Titulo" style="height: 200px; object-fit: cover;">
+                            <img src="/images/book-placeholder.jpg" class="card-img-top" alt="@item.Titulo" style="height: 280px; object-fit: cover;">
                         }
+                        <!-- Calificación como un círculo flotante - AHORA MÁS GRANDE -->
                         <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge bg-primary rounded-pill">
-                                <i class="bi bi-star-fill"></i> @item.CalificacionPromedio
+                            <span class="badge rounded-pill p-2" style="background-color: #56425D; width: 75px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 16px;">
+                                <i class="fa fa-star me-1"></i> @item.CalificacionPromedio
                             </span>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate" title="@item.Titulo">@item.Titulo</h5>
-                        <p class="card-text text-muted mb-1">
-                            <i class="bi bi-person"></i> @item.NombreAutor
+
+                    <!-- Información minimalista -->
+                    <div class="card-body p-3">
+                        <h5 class="card-title fw-bold text-truncate mb-1" title="@item.Titulo">@item.Titulo</h5>
+                        <p class="card-text text-muted mb-1 small">
+                            <i class="bi bi-person-fill"></i> @item.NombreAutor
                         </p>
-                        <p class="card-text text-muted small">
-                            <i class="bi bi-calendar"></i> @item.FechaPublicacion.Year &nbsp;|&nbsp;
-                            <i class="bi bi-file-text"></i> @item.NumeroPaginas págs
+                        <p class="card-text text-muted small mb-0">
+                            <i class="bi bi-calendar-event"></i> @item.FechaPublicacion.Year
                         </p>
-                        <p class="card-text small text-truncate" title="@item.Sinopsis">@item.Sinopsis</p>
                     </div>
-                    <div class="card-footer bg-transparent">
-                        <div class="btn-group w-100">
-                            <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+
+                    <!-- Botones más atractivos - CORREGIDO EL DROPDOWN -->
+                    <div class="card-footer bg-transparent py-3 border-top-0">
+                        <div class="d-flex gap-2">
+                            <!-- Botón de detalles más redondeado y estilizado -->
+                            <a asp-action="Detalles" asp-controller="Libros" asp-route-id="@item.Id"
+                               class="btn btn-sm flex-grow-1 rounded-pill shadow-sm"
+                               style="background-color: #e9ecef; color: #495057; border: none; transition: all 0.2s ease;">
                                 <i class="bi bi-eye"></i> Detalles
                             </a>
-                            <div class="dropdown">
-                                <button class="btn dropdown-toggle
+
+                            <!-- Dropdown con estilo mejorado - CORREGIDO -->
+                            <div class="dropdown flex-grow-1">
+                                <button class="btn btn-sm rounded-pill shadow-sm w-100 dropdown-toggle
                                 @(item.idLista == 1 ? "btn-primary" :
-                                  item.idLista == 2 ? "btn-success" :
-                                  item.idLista == 3 ? "btn-warning" :
-                                  item.idLista == 4 ? "btn-black" :"btn-secondary")"
+                                item.idLista == 2 ? "btn-success" :
+                                item.idLista == 3 ? "btn-warning" :
+                                item.idLista == 4 ? "btn-dark" : "btn-secondary")"
+                                        style="border: none; transition: all 0.2s ease;"
                                         type="button" id="dropdownMenuButton-@item.Id"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                                     @if (item.idLista == 0)
                                     {
-                                        <span>Añadir a lista</span>
+                                        <span><i class="bi bi-plus-circle me-1"></i>Lista</span>
                                     }
                                     else if (item.idLista == 1)
                                     {
-                                        <span>Leyendo</span>
+                                        <span><i class="bi bi-book me-1"></i>Leyendo</span>
                                     }
                                     else if (item.idLista == 2)
                                     {
-                                        <span>Leído</span>
+                                        <span><i class="bi bi-check-circle me-1"></i>Leído</span>
                                     }
                                     else if (item.idLista == 3)
                                     {
-                                        <span>Próxima Lectura</span>
+                                        <span><i class="bi bi-hourglass me-1"></i>Próxima</span>
                                     }
                                     else if (item.idLista == 4)
                                     {
-                                        <span>No terminado</span>
+                                        <span><i class="bi bi-x-circle me-1"></i>No terminado</span>
                                     }
                                 </button>
 
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-@item.Id">
-                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="1" data-origen="@item.idLista">Leyendo</button>
-                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="2" data-origen="@item.idLista">Leído</button>
-                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="3" data-origen="@item.idLista">Próxima Lectura</button>
-                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="4" data-origen="@item.idLista">No Terminado</button>
-                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="0" data-origen="@item.idLista">Eliminar</button>
+                                <div class="dropdown-menu shadow-sm border-0 rounded-3" aria-labelledby="dropdownMenuButton-@item.Id">
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="1" data-origen="@item.idLista">
+                                        <i class="bi bi-book text-primary me-2"></i>Leyendo
+                                    </button>
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="2" data-origen="@item.idLista">
+                                        <i class="bi bi-check-circle text-success me-2"></i>Leído
+                                    </button>
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="3" data-origen="@item.idLista">
+                                        <i class="bi bi-hourglass text-warning me-2"></i>Próxima Lectura
+                                    </button>
+                                    <button class="dropdown-item mover-libro" data-idLibro="@item.Id" data-destino="4" data-origen="@item.idLista">
+                                        <i class="bi bi-x-circle text-dark me-2"></i>No Terminado
+                                    </button>
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item mover-libro text-danger" data-idLibro="@item.Id" data-destino="0" data-origen="@item.idLista">
+                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                    </button>
                                 </div>
                             </div>
                         </div>

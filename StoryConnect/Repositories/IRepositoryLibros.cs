@@ -31,7 +31,7 @@ namespace StoryConnect.Repositories
         Task InsertObjetivo(int idUsuario, string titulo, DateTime fin, string tipo, int meta);
         Task <ProgresoLectura> GetProgresoLectura(int idUsuario, int idLibro);
         Task<List<Etiquetas>> GetEtiquetas();
-
+        Task<ObjetivosUsuarios> UpdateObjetivo(int idObjetivo, int idUsuario, int progreso);
         Task DeleteObjetivo(int idObjetivo);
 
         Task InsertProgreso(int UsuarioId, int LibroId);

@@ -1,13 +1,5 @@
 ﻿@model List<ObjetivosUsuarios>
 <style>
-    :root {
-        --primary-bg: #1a2635;
-        --secondary-bg: #263545;
-        --accent-color: #ffba08;
-        --text-color: #e9ecef;
-        --muted-text: #adb5bd;
-        --highlight: #037bfc;
-    }
 
     body {
         background-color: var(--primary-bg);
@@ -241,6 +233,7 @@
     }
 
     .reading-goal {
+        margin-top:10px;
         background-color: var(--secondary-bg);
         border-radius: 10px;
         padding: 20px;
@@ -317,8 +310,18 @@
     }
     
 </style>
-<div class="container" style="padding-top: 2rem!important; padding-bottom:6rem!important">
-    <h2 class="text-center">Mis Objetivos</h2>
+<div class="container" style="padding-top: 2rem!important; padding-bottom:6rem!important; background-color:whitesmoke" >
+    <div class="row mb-4">
+        <div class="col-12 rounded" style="background-color:#56425D; width:200px;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" >
+                    <li class="breadcrumb-item"><a asp-action="Perfil">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color:white">Mis Objetivos</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <h2 class="text-center" style="color:black">Mis Objetivos</h2>
 
     <button id="insertarObjetivo" class="btn btn-primary">Añadir Objetivo</button>
 
@@ -361,15 +364,50 @@
         </div>
     </div>
 
-
+    <br />
     @foreach (var objetivo in Model)
     {
-        <a asp-action="DeleteObjetivo" asp-controller="Usuarios" asp-route-idObjetivo="@objetivo.idObjetivo" class="btn btn-danger">
-            Eliminar objetivo
-        </a>
         var percentComplete = (objetivo.ProgresoActual * 100) / objetivo.Meta;
 
         <div class="reading-goal">
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-info p-2"
+                        data-bs-toggle="modal" data-bs-target="#updateProgressModal-@objetivo.idObjetivo">
+                             <i class="fa-solid fa-pen-to-square"></i>
+
+                </button>
+                <div class="modal fade" id="updateProgressModal-@objetivo.idObjetivo" tabindex="-1" aria-labelledby="updateProgressModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content rounded-lg shadow">
+                            <div class="modal-header" style="background-color: #56425D; color: white;">
+                                <h5 class="modal-title" id="updateProgressModalLabel">Actualizar Progreso</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formProgreso-@objetivo.idObjetivo" method="post" action="/Usuarios/UpdateProgreso">
+                                    <input type="hidden" id="idObjetivo" name="idObjetivo" value="@objetivo.idObjetivo" />
+                                    <input type="hidden" id="idUsuario" name="idUsuario" value="@objetivo.IdUsuario" />
+
+                                    <div class="mb-3">
+                                        <label for="progreso" class="form-label">Progreso Actual:</label>
+                                        <input type="text" id="progreso" name="ProgresoActual" class="form-control rounded-pill" value="@objetivo.ProgresoActual" min="0" max="@objetivo.Meta" required />
+                                        <div class="form-text">Meta: @objetivo.Meta</div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn rounded-pill" style="background-color: #56425D; color: white;">Actualizar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a asp-action="DeleteObjetivo" asp-controller="Usuarios" asp-route-idObjetivo="@objetivo.idObjetivo" class="btn btn-danger p-2" style="margin-left:20px">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
+            <hr />
             <div class="goal-header">
                 <div class="goal-label">Goal</div>
                 <div class="goal-label">
@@ -395,7 +433,9 @@
             </div>
         </div>
     }
+
 </div>
+
 
 <!-- Agregar SweetAlert2 desde CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

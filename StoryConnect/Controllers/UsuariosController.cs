@@ -146,5 +146,13 @@ namespace StoryConnect.Controllers
             await this.repo.DeleteObjetivo(idObjetivo);
             return RedirectToAction("MisObjetivos", idUser);
         }
+
+        public async Task<IActionResult> UpdateProgreso(ObjetivosUsuarios objetivos)
+        {
+            int idusuario = (int)HttpContext.Session.GetInt32("id");
+
+            await this.repo.UpdateObjetivo(objetivos.idObjetivo, idusuario, objetivos.ProgresoActual);
+            return RedirectToAction("MisObjetivos", new { id = objetivos.IdUsuario });
+        }
     }
 }

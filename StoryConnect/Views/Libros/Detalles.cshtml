@@ -1,9 +1,14 @@
 ﻿@model LibrosDetalles
 @{
     ViewData["Title"] = "Detalles";
+    var usuario = Context.Session.GetString("nombre");
+    var idUsuario = Context.Session.GetInt32("id");
+    var avatar = Context.Session.GetString("imagen_perfil");
 }
 
-<div class="container my-4">
+
+
+<div class="container" style="background-color:whitesmoke; padding-top: 2rem!important; padding-bottom:6rem!important">
     <!-- Book Header Section -->
     <div class="row mb-4">
         <div class="col-12">
@@ -32,13 +37,13 @@
                     </div>
                 }
 
-                <!-- Action Buttons -->
-                <div class="btn-group dropright">
+                <!-- Botón de mover de lista con margen superior -->
+                <div class="btn-group dropright mt-3">
                     <button class="btn dropdown-toggle
-                                                @(Model.ListaLibro == 1 ? "btn-primary" :
-                                                  Model.ListaLibro == 2 ? "btn-success" :
-                                                  Model.ListaLibro == 3 ? "btn-warning" :
-                                                  Model.ListaLibro == 4 ? "btn-black" :"btn-secondary")"
+                                        @(Model.ListaLibro == 1 ? "btn-primary" :
+                                          Model.ListaLibro == 2 ? "btn-success" :
+                                          Model.ListaLibro == 3 ? "btn-warning" :
+                                          Model.ListaLibro == 4 ? "btn-dark" : "btn-secondary")"
                             type="button" id="dropdownMenuButton-@Model.ListaLibro"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
@@ -73,8 +78,8 @@
                     </div>
                 </div>
 
-                <!-- Edition Info -->
-                <div class="mt-3 text-start small">
+                <!-- Información de la edición con más margen superior -->
+                <div class="mt-3 text-start small" style="color:dimgrey">
                     <div class="text-muted mb-1">Edición:</div>
                     <div>Pasta blanda, @Html.DisplayFor(model => model.Libro.NumeroPaginas) páginas</div>
                     <div>Publicado: @Model.Libro.FechaPublicacion.ToShortDateString()</div>
@@ -100,7 +105,7 @@
             <div class="mb-4 rating-section">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <span class="display-6 fw-bold">@Model.Libro.CalificacionPromedio.ToString("0.00")</span>
+                        <span class="display-6 fw-bold" style="color:black">@Model.Libro.CalificacionPromedio.ToString("0.00")</span>
                     </div>
                     <div class="review-rating">
                         @for (int i = 1; i <= 5; i++)
@@ -137,10 +142,9 @@
                     {
                         @foreach (var etiqueta in Model.Etiquetas)
                         {
-                            <a href="@Url.Action("LibrosPorEtiqueta", "Libros", new { etiquetaId = etiqueta.Id })"
-                               class="badge bg-primary text-decoration-none me-2 mb-2 py-2 px-3">
+                            <button class="badge bg-primary text-decoration-none me-2 mb-2 py-2 px-3" disabled>
                                 @etiqueta.Nombre
-                            </a>
+                            </button>
                         }
                     }
                     else
@@ -155,7 +159,7 @@
                 <h4>Sinopsis</h4>
                 <p>@Html.DisplayFor(model => model.Libro.Sinopsis)</p>
             </div>
-            
+
             <!-- Book Metadata -->
             <div class="mb-4 metadata-section">
                 <h4>Información del libro</h4>
@@ -163,10 +167,6 @@
                     <div class="col-md-6">
                         <table class="table table-sm">
                             <tbody>
-                                <tr>
-                                    <th scope="row" class="text-muted">ID:</th>
-                                    <td>@Html.DisplayFor(model => model.Libro.Id)</td>
-                                </tr>
                                 <tr>
                                     <th scope="row" class="text-muted">Título:</th>
                                     <td>@Html.DisplayFor(model => model.Libro.Titulo)</td>
@@ -198,11 +198,8 @@
                                 }
                                 <tr>
                                     <th scope="row" class="text-muted">Fecha Publicación:</th>
-                                    <td>@Html.DisplayFor(model => model.Libro.FechaPublicacion)</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="text-muted">ID Autor:</th>
-                                    <td>@Html.DisplayFor(model => model.Libro.AutorId)</td>
+                                    <td>@Model.Libro.FechaPublicacion.ToString("yyyy-MM-dd")</td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -213,11 +210,12 @@
     </div>
     <hr />
     <div class="reviews-container">
-        <h2>Reseñas: @Model.Resenas.Count() </h2>
-
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Añadir una reseña
-        </button>
+        @if(idUsuario != null)
+        {
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Añadir una reseña
+            </button>
+        }
 
         <!-- Modal para Añadir Reseña -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -230,9 +228,6 @@
                     <form id="formReseña" method="post" action="/Libros/InsertReseña">
                         <div class="modal-body">
                             <label for="reseñaTexto">Reseña: </label>
-                            <input type="text" class="form-control" id="texto" name="texto" placeholder="El libro me ha parecido..." required />
-                            <input type="hidden" id="idLibro" name="idLibro" value="@Model.Libro.Id" />
-
                             <div class="mb-3">
                                 <label class="form-label">Calificación</label>
                                 <select id="calificacion" class="form-control" name="calificacion">
@@ -243,6 +238,9 @@
                                     <option value="5">5 ⭐⭐⭐⭐⭐</option>
                                 </select>
                             </div>
+                            <input type="text" class="form-control" id="texto" name="texto" placeholder="Escribe una reseña...." required />
+                            <input type="hidden" id="idLibro" name="idLibro" value="@Model.Libro.Id" />
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -257,11 +255,10 @@
 
         @foreach (var review in Model.Resenas)
         {
-            <div class="review-card">
+            <div class="review-card" style="background-color: #ededed">
                 <div class="review-header">
                     <div class="review-id">
-                        <span class="label">Review #</span>
-                        <span class="value">@review.Id</span>
+                        <span class="label">Review</span>
                     </div>
                     <div class="review-date">
                         <i class="fa fa-calendar"></i>
@@ -273,37 +270,35 @@
                     <div class="user-avatar">
                         <i class="fa fa-user-circle"></i>
                     </div>
-                    <div class="user-id">User @review.Usuario.Nombre</div>
+                    <div class="user-id" style="color:dimgrey">User @review.Usuario.Nombre</div>
                 </div>
 
                 <div class="review-rating">
-                    @for (int i = 1; i <= 5; i++)
+                    @for (int i = 1; i <= review.calificacion; i++)
                     {
-                        if (i <= review.calificacion)
-                        {
-                            <i class="fa fa-star filled"></i>
-                        }
-                        else
-                        {
-                            <i class="fa fa-star empty"></i>
-                        }
+                            <i class="fa fa-star"></i>
+                        
                     }
-                    <span class="points">@review.calificacion/5</span>
+                    <span class="points">@review.calificacion</span> / 5
                 </div>
 
                 <div class="review-text">
                     <p>@review.texto</p>
                 </div>
-                <button class="btn btn-primary editar-resena"
-                        data-idresena="@review.Id"
-                        data-usuario="@review.Usuario.Nombre"
-                        data-calificacion="@review.calificacion"
-                        data-texto="@review.texto"
-                        data-idLibro="@review.idLibro">
+                @if(idUsuario == review.UsuarioId)
+                {
+                    <button class="btn btn-primary editar-resena"
+                            data-idresena="@review.Id"
+                            data-usuario="@review.Usuario.Nombre"
+                            data-calificacion="@review.calificacion"
+                            data-texto="@review.texto"
+                            data-idLibro="@review.idLibro">
                         
                         
-                    <i class="fa fa-edit"></i> Editar
-                </button>
+                        <i class="fa fa-edit"></i> Editar
+                    </button>
+                    
+                }
 
             </div>
         }
@@ -362,17 +357,31 @@
 
 <!-- Add this to your site.css or in a style tag -->
 <style>
+    .modal-content{
+        color: dimgrey;
+        background-color: #ededed;
+    }
+
+    h1,h2,h3,h4{
+        color: #56425d;
+    }
+
     .book-cover {
-        max-height: 350px;
-        width: auto;
+        width: 100%;
+        max-width: 250px; /* Aumenta el tamaño de la imagen */
+        height: auto;
     }
 
     .book-cover-placeholder {
-        height: 350px;
+        width: 100%;
+        max-width: 250px;
+        height: 350px; /* Ajusta la altura para que coincida con la imagen */
         display: flex;
-        flex-direction: column;
+        align-items: center;
         justify-content: center;
+        flex-direction: column;
     }
+
 
     .book-title {
         font-size: 1.8rem;
@@ -412,6 +421,7 @@
 
     .sinopsis-section {
         background-color: #f9f9f9;
+        color:dimgrey;
         padding: 15px;
         border-radius: 5px;
         border-left: 4px solid #3c763d;
@@ -437,109 +447,156 @@
         margin-top: 10px;
     }
 
+    /* Contenedor de reseñas */
     .reviews-container {
-        font-family: 'Arial', sans-serif;
-        max-width: auto;
-        margin: 0 auto;
-        padding: 20px;
+        margin-top: 3rem;
+        padding: 1.5rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .review-card {
-        background-color: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 25px;
-        border: 2px solid #f8bbd0;
-        transition: transform 0.3s ease;
-    }
-
-        .review-card:hover {
-            transform: translateY(-5px);
+        /* Título de reseñas */
+        .reviews-container h2 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #333;
         }
 
+        /* Botón de añadir reseña */
+        .reviews-container .btn {
+            margin-bottom: 1.5rem;
+        }
+
+    /* Tarjeta de reseña */
+    .review-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        /* Hover para la tarjeta de reseña */
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Encabezado de la reseña (ID y fecha) */
     .review-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 15px;
-        border-bottom: 2px dashed #f8bbd0;
-        padding-bottom: 10px;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: #555;
     }
 
-    .review-id {
-        background-color: #f8bbd0;
-        border-radius: 20px;
-        padding: 5px 12px;
-        font-size: 14px;
-        color: #880e4f;
-    }
-
-        .review-id .label {
-            font-weight: bold;
-        }
-
-    .review-date {
-        color: #757575;
-        font-size: 14px;
+    /* Estilos para el ID y la fecha de la reseña */
+    .review-id .label {
+        font-weight: bold;
+        color: #007bff;
     }
 
     .review-user {
         display: flex;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 1rem;
     }
 
     .user-avatar {
-        background-color: #f8bbd0;
+        background-color: #007bff;
+        color: white;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 10px;
-        color: #880e4f;
-        font-size: 20px;
+        padding: 0.5rem;
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
     }
 
     .user-id {
         font-weight: bold;
-        color: #616161;
     }
 
+    /* Estilos para las estrellas de calificación */
     .review-rating {
-        margin-bottom: 15px;
-        color: #ffc107;
-        font-size: 18px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
     }
 
-        .review-rating .filled {
-            color: #ffc107;
-        }
-
-        .review-rating .empty {
-            color: #e0e0e0;
+        .review-rating i {
+            color: #f5a623;
+            margin-right: 3px;
         }
 
         .review-rating .points {
             margin-left: 10px;
-            color: #616161;
-            font-size: 14px;
-            vertical-align: middle;
+            color: #555;
+            font-weight: bold;
         }
 
-    .review-text {
-        padding: 15px;
-        background-color: #fff9fa;
-        border-radius: 10px;
-        border-left: 4px solid #f8bbd0;
+    /* Estilos para el texto de la reseña */
+    .review-text p {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #444;
     }
 
-        .review-text p {
-            margin: 0;
-            color: #424242;
-            line-height: 1.5;
+    /* Botón de editar reseña */
+    .editar-resena {
+        margin-top: 1rem;
+        display: block;
+        width: 100%;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 1rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .editar-resena:hover {
+            background-color: #0056b3;
         }
+
+    /* Estilos del modal de añadir y editar reseña */
+    .modal-dialog {
+        max-width: 500px;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+
+    .modal-header {
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-footer {
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .modal-title {
+        font-weight: bold;
+    }
+
+    /* Estilo para el input y textarea del formulario */
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+    }
+
+    /* Estilos para las opciones de calificación en el modal */
+    select.form-control {
+        cursor: pointer;
+    }
 </style>
 
 <!-- Add Bootstrap Icons to your _Layout.cshtml or here -->
