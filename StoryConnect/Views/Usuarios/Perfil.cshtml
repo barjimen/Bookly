@@ -411,7 +411,7 @@
                                     @if (libros.Count == 0)
                                     {
                                         <div class="p-4 text-center text-muted">
-                                            <i class="fas fa-book me-2"></i> No books in this category yet
+                                            <i class="fas fa-book me-2"></i> No hay libros
                                         </div>
                                     }
                                     else
@@ -487,7 +487,7 @@
                 <div class="goal-stats">
                     <div class="d-flex align-items-center gap-3">
                         <div class="progress-marker" style="width: 20px; height: 20px; background-color: var(--accent-color); border-radius: 4px;"></div>
-                        <span>@objetivo.ProgresoActual/@objetivo.Meta books</span>
+                        <span>@objetivo.ProgresoActual/@objetivo.Meta @objetivo.TipoObjetivo </span>
                     </div>
                     <div class="goal-percent">@percentComplete%</div>
                 </div>
